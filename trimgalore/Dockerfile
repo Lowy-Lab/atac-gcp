@@ -1,21 +1,18 @@
-FROM ubuntu
+FROM linearparadox/basegcp
+LABEL project="appendix-atac"
 WORKDIR /tools
-RUN apt-get update
-RUN apt-get install -y build-essential wget curl unzip apt-transport-https ca-certificates gnupg default-jre pipx pigz && \
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    apt-get update && apt-get install -y google-cloud-cli && \  
-    wget -O fastqc.zip https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.12.1.zip && \
+COPY pipx_global.sh /tools/pipx_global.sh
+RUN wget -O fastqc.zip https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.12.1.zip && \
     unzip fastqc.zip && rm fastqc.zip && \
     chmod +x FastQC/fastqc && \
     echo 'export PATH=$PATH:/tools/FastQC' >> ~/.bashrc && \
+    apt-get install -y python3-dev default-jre && \
     pipx ensurepath && \
-    pipx install cutadapt && \
-    pipx ensurepath
+    curl -fsSL https://github.com/FelixKrueger/TrimGalore/archive/0.6.10.tar.gz -o trim_galore.tar.gz && \
+    tar xvzf trim_galore.tar.gz && \
+    echo "export PATH=$PATH:/tools/TrimGalore-0.6.10" >> ~/.bashrc
+RUN chmod +x /tools/pipx_global.sh && /tools/pipx_global.sh
 WORKDIR /fastq
 COPY trimgalore.sh /fastq/trimgalore.sh
 RUN chmod +x /fastq/trimgalore.sh
-ENTRYPOINT ["/fastq/trimgalore.sh"]
-
-
-
+ENTRYPOINT ["bash", "-i", "/fastq/trimgalore.sh"]
