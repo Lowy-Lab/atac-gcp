@@ -9,5 +9,6 @@ RUN wget -O bowtie2.zip https://github.com/BenLangmead/bowtie2/releases/download
     cd samtools-1.21 && ./configure --disable-bz2 --prefix /tools/samtools && make && make install && \
     echo 'export PATH=$PATH:/tools/samtools/bin' >> ~/.bashrc
 WORKDIR /fastq
-RUN wget -O ref.zip https://genome-idx.s3.amazonaws.com/bt/GRCh38_noalt_decoy_as.zip && unzip ref.zip && rm ref.zip
 COPY align.sh /fastq/align.sh
+RUN chmod 777 align.sh
+#ENTRYPOINT [ "./align.sh" ]
