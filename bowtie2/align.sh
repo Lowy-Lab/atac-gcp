@@ -1,6 +1,8 @@
 #!/bin/bash
-#Manifest provided as a command line arg, and the batch task index is provided as an environment variable
-#Project dir is also provided as an environment variable
+#$1 -- manifest file for samples
+#$2 -- project directory
+#$3 -- number of threads for bowtie2
+#$4 -- reference genome path
 gcloud storage cp $1 samples.txt
 mkdir ref_genome/
 gcloud storage cp $4/* ref_genome/ 
