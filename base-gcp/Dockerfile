@@ -1,4 +1,4 @@
-FROM arm64v8/ubuntu
+FROM ubuntu
 LABEL infrastructure="gcp"
 WORKDIR /tools
 RUN apt-get update
