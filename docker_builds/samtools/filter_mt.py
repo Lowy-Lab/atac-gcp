@@ -6,6 +6,7 @@
 # Remove reference sequence(s) (e.g. chrM) from a SAM.
 #   Adjust FLAG and other fields so that perhaps even
 #   Picard won't object (unlikely, but...)
+#Slightly modified by Alexei M to use a set for large lists of chroms
 
 import sys
 import gzip
@@ -123,7 +124,7 @@ def main():
 
   fIn = openRead(args[0])
   fOut = openWrite(args[1])
-  chrom = args[2:]
+  chrom = set(args[2:])
 
   procFiles(fIn, fOut, chrom)
 

@@ -1,5 +1,7 @@
 #!/bin/bash
-#Manifest provided as a command line arg, and the batch task index is provided as an environment variable
+#1 -- manifest file for samples
+#2 -- project directory
+workdir=${2%/} #strips a trailing slash if present
 gcloud storage cp $1 samples.txt
 echo $1
 echo $2
@@ -15,5 +17,5 @@ mkdir fastqc
 trim_galore --paired --nextera --cores 3 --output_dir trimmed/ *R1*.fastq.gz *R2*.fastq.gz
 mkdir -p trimmed/fastqc
 /tools/FastQC/fastqc trimmed/*fq.gz -o trimmed/fastqc -t 6
-gcloud storage cp -r fastqc ${2}outs/${sample}/
-gcloud storage cp -r trimmed ${2}outs/${sample}/
+gcloud storage cp -r fastqc ${workdir}/outs/per_sample_outs/${sample}/
+gcloud storage cp -r trimmed ${workdir}/outs/per_sample_outs/${sample}/

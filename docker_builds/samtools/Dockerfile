@@ -9,5 +9,5 @@ COPY filter.sh /fastq/filter.sh
 RUN chmod 777 filter.sh
 ENV PATH="/tools/samtools/bin:${PATH}"
 COPY filter_mt.py /fastq/
-COPY filter_chroms.txt /fastq/
+COPY get_chrom.py /fastq/
 ENTRYPOINT ["bash", "/fastq/filter.sh"]

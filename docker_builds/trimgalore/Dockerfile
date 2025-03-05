@@ -11,7 +11,7 @@ RUN wget -O fastqc.zip https://www.bioinformatics.babraham.ac.uk/projects/fastqc
     curl -fsSL https://github.com/FelixKrueger/TrimGalore/archive/0.6.10.tar.gz -o trim_galore.tar.gz && \
     tar xvzf trim_galore.tar.gz && \
     echo "export PATH=$PATH:/tools/TrimGalore-0.6.10" >> ~/.bashrc
-RUN chmod +x /tools/pipx_global.sh && /tools/pipx_global.sh
+RUN chmod +x /tools/pipx_global.sh && /tools/pipx_global.sh "cutadapt"
 WORKDIR /fastq
 COPY trimgalore.sh /fastq/trimgalore.sh
 RUN chmod +x /fastq/trimgalore.sh

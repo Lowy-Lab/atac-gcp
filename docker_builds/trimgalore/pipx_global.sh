@@ -20,4 +20,4 @@ pipx-global () {
     fi
 }
 
-pipx-global install cutadapt
+pipx-global install $1
