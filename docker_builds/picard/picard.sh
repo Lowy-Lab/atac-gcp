@@ -68,7 +68,9 @@ java -jar /tools/picard.jar AddOrReplaceReadGroups \
 samtools index -@ $threads subsampled_sorted.bam
 basename_sample="${output_name%.bam}"
 java -jar /tools/picard.jar MarkDuplicates I=subsampled_sorted.bam O=deduped.bam M=${basename_sample}_picard_metrics.txt REMOVE_DUPLICATES=true
-samtools sort -o $output_name -m $mem -@ $threads deduped.bam
+samtools sort -o deduped_sorted.bam -m $mem -@ $threads deduped.bam
+rm deduped.bam
+samtools fixmate -m deduped_sorted.bam $output_name
 samtools index -@ $threads $output_name
 gcloud storage cp $output_name ${workdir}/outs/per_sample_outs/${sample}/bams/
 gcloud storage cp ${output_name}.bai ${workdir}/outs/per_sample_outs/${sample}/bams/
