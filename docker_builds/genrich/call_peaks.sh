@@ -44,7 +44,7 @@ usage() {
 }
 
 # Parse command line arguments
-while getopts "t:f:Dp:q:a:l:g:P:E:w:s:z@:m:o:v:" opt; do
+while getopts "t:f:Dp:q:a:l:g:P:E:w:s:z@:m:o:v" opt; do
     case $opt in
         t)
             input_bam="$OPTARG"
@@ -128,16 +128,17 @@ echo "Samplesheet:      $samplesheet"
 echo "Gzip outputs:     $gzip_outputs"
 echo "==========================="
 
-gcloud storage cp $samplesheet samples.txt
+gcloud storage cp "${samplesheet}" samples.txt
+work_dir=${work_dir%/} #strips a trailing slash if present
 dos2unix samples.txt #in case it was written in windows
 sample=$(awk "NR==$((${BATCH_TASK_INDEX}+1))" samples.txt | cut -d , -f 1)
 gcloud storage cp ${work_dir}/outs/per_sample_outs/${sample}/bams/${input_bam} .
 gcloud storage cp ${work_dir}/outs/per_sample_outs/${sample}/bams/${input_bam}.bai .
 gcloud storage cp $exclude_regions blacklist.bed
+(cd /tools/Genrich && make Genrich && chmod +x /tools/Genrich) #for some reason docker refuses to save the compiled executable???????
 if [ -n "$input_bam" ]; then
     echo "Position sorting bam file for Genrich!"
     samtools sort -o tmp.bam -m $samtools_memory -@ $samtools_threads -n $input_bam
-    samtools index -@ $samtools_threads tmp.bam
     input_bam="tmp.bam"
 fi
 if [ -n "$peak_logfile" ]; then
@@ -196,11 +197,16 @@ fi
 if $verbose; then
     cmd+=" -v"
 fi
-cmd+= " -o $output_name"
-
+cmd+=" -o $output_name"
 # Execute the command
 echo "Executing: $cmd"
 eval "$cmd"
+if $gzip_outputs; then
+    output_name+=".gz"
+    if [ -n "$logfile" ]; then
+        logfile+=".gz"
+    fi
+fi
 if [ -n "$logfile" ]; then
     gcloud storage cp $logfile ${work_dir}/outs/per_sample_outs/${sample}/logs/${logfile}
 fi
