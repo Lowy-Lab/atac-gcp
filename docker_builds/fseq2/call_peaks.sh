@@ -79,8 +79,7 @@ gcloud storage cp "${samplesheet}" samples.txt
 work_dir=${work_dir%/} #strips a trailing slash if present
 dos2unix samples.txt #in case it was written in windows
 sample=$(awk "NR==$((${BATCH_TASK_INDEX}+1))" samples.txt | cut -d , -f 1)
-gcloud storage cp ${work_dir}/outs/per_sample_outs/${sample}/bams/${input_bam} .
-samtools sort -n -@ ${threads} -m $memory -o tmp.bam ${input_bam}
+gcloud storage cp ${work_dir}/outs/per_sample_outs/${sample}/bams/${input_bam} - | samtools view -b -u -F 0x904 | samtools sort -n -@ ${threads} -m $memory -o tmp.bam
 if [ -z "$chrom_sizes" ]  && [ "$output_format" = "bigwig" ]; then
     echo "Chromosome sizes file (-c) is required for bigwig output. No signal output will be provided"
     output_format="none"
